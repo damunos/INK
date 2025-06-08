@@ -1,4 +1,4 @@
-// src/components/ProductSelector/ProductSelector.js
+// src/components/ProductSelector/ProductSelector.jsx
 import React from "react";
 
 const ProductSelector = ({

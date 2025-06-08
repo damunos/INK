@@ -53,7 +53,9 @@ const Products = ({ setSelectedProduct }) => {
           >
             <img src={product.imageUrl} alt={product.name} />
             <h2>{product.name}</h2>
-            <p>{product.mainCategory} - {product.subCategory}</p>
+            <p>
+              {product.mainCategory} - {product.subCategory}
+            </p>
           </div>
         ))}
       </div>

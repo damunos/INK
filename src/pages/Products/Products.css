@@ -1,0 +1,32 @@
+/* src/pages/Products/Products.css */
+
+.products-page {
+  padding: 20px;
+}
+
+.category-filters {
+  margin-bottom: 20px;
+}
+
+.products-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.product-card {
+  border: 1px solid #ddd;
+  padding: 10px;
+  width: 200px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.product-card:hover {
+  transform: scale(1.05);
+}
+
+.product-card img {
+  max-width: 100%;
+  height: auto;
+}
