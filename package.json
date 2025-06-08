@@ -1,0 +1,14 @@
+{
+  "name": "ink",
+  "version": "1.0.0",
+  "description": "Official website and custom design tool for Ink n Threadworks",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "deploy": "gh-pages -d dist"
+  },
+  "devDependencies": {
+    "gh-pages": "^6.3.0"
+  }
+}
