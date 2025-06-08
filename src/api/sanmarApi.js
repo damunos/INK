@@ -2,10 +2,10 @@ import axios from "axios";
 import { SANMAR_API } from "../config/sanmarConfig";
 
 const sanmarApi = axios.create({
-  baseURL: SANMAR_API.baseURL,
+  baseURL: "https://test-ws.sanmar.com:8080/promostandards/POServiceBinding?WSDL";
   auth: {
-    username: SANMAR_API.username,
-    password: SANMAR_API.password,
+    username: "melaniesue9972",
+    password: "Alan1963!",
   },
 });
 
