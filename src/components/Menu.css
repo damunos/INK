@@ -1,0 +1,22 @@
+/* src/components/Menu.css */
+.menu {
+  background-color: #333;
+  padding: 10px;
+}
+
+.menu ul {
+  list-style: none;
+  display: flex;
+  gap: 15px;
+  padding: 0;
+  margin: 0;
+}
+
+.menu ul li a {
+  color: white;
+  text-decoration: none;
+}
+
+.menu ul li a:hover {
+  text-decoration: underline;
+}

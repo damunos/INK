@@ -1,37 +1,45 @@
-// src/pages/Products/index.jsx
-
 import React, { useEffect, useState } from "react";
 import { getProductData } from "../../api/promoStandardsApi";
 import "./Products.css";
 
-const Products = () => {
-  const [productData, setProductData] = useState(null);
+const ProductsPage = () => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Example product ID → you should replace with a valid ID from SanMar.
-    const productID = "ST340";
+    const fetchProducts = async () => {
+      setLoading(true);
+      setError(null);
 
-    getProductData(productID)
-      .then((data) => {
-        console.log("Product data received:", data);
-        setProductData(data);
-      })
-      .catch((err) => {
-        console.error("Error loading product data:", err);
-      });
+      try {
+        const data = await getProductData();
+        setProducts(data.products || []);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
   }, []);
 
   return (
     <div className="products-page">
       <h1>Products</h1>
-
-      {productData ? (
-        <pre>{JSON.stringify(productData, null, 2)}</pre>
-      ) : (
-        <p>Loading product data...</p>
-      )}
+      {loading && <p>Loading products...</p>}
+      {error && <p style={{ color: "red" }}>Error: {error}</p>}
+      <ul className="product-list">
+        {products.map((product) => (
+          <li key={product.style}>
+            <h3>{product.style} - {product.styleName}</h3>
+            <p>{product.description}</p>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
 
-export default Products;
+export default ProductsPage;
