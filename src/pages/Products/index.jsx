@@ -1,43 +1,62 @@
+// src/pages/Products/index.jsx
+
 import React, { useEffect, useState } from "react";
 import { getProductData } from "../../api/promoStandardsApi";
 import "./Products.css";
 
 const ProductsPage = () => {
-  const [products, setProducts] = useState([]);
+  const [productId, setProductId] = useState("ST640"); // Default productId for testing
+  const [productData, setProductData] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState("");
+
+  const fetchProductData = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const data = await getProductData(productId);
+      setProductData(data);
+      console.log("Fetched Product Data:", data);
+    } catch (err) {
+      console.error("Error fetching product data:", err);
+      setError("Failed to fetch product data.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const data = await getProductData();
-        setProducts(data.products || []);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []);
+    fetchProductData();
+  }, [productId]); // Refetch when productId changes
 
   return (
     <div className="products-page">
-      <h1>Products</h1>
-      {loading && <p>Loading products...</p>}
-      {error && <p style={{ color: "red" }}>Error: {error}</p>}
-      <ul className="product-list">
-        {products.map((product) => (
-          <li key={product.style}>
-            <h3>{product.style} - {product.styleName}</h3>
-            <p>{product.description}</p>
-          </li>
-        ))}
-      </ul>
+      <h1>Products Page</h1>
+
+      <div style={{ marginBottom: "1rem" }}>
+        <label>
+          Enter Product ID:&nbsp;
+          <input
+            type="text"
+            value={productId}
+            onChange={(e) => setProductId(e.target.value)}
+            placeholder="Enter Product ID (e.g. ST640)"
+          />
+        </label>
+        <button onClick={fetchProductData} disabled={loading}>
+          {loading ? "Loading..." : "Fetch Product Data"}
+        </button>
+      </div>
+
+      {error && <div style={{ color: "red" }}>{error}</div>}
+
+      {productData ? (
+        <pre style={{ textAlign: "left", backgroundColor: "#f9f9f9", padding: "1rem", borderRadius: "5px" }}>
+          {JSON.stringify(productData, null, 2)}
+        </pre>
+      ) : (
+        !loading && <div>No product data loaded yet.</div>
+      )}
     </div>
   );
 };

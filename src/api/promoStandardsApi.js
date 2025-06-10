@@ -1,26 +1,39 @@
 // src/api/promoStandardsApi.js
-import axios from 'axios';
 
-const PROXY_BASE_URL = 'http://localhost:4000/api';
+import axios from "axios";
+import { XMLParser } from "fast-xml-parser";
 
-export async function getProductData(productId) {
+const API_BASE_URL = "http://localhost:4000";
+
+export const getProductData = async (productId) => {
+  if (!productId) {
+    console.warn("getProductData called with undefined or empty productId — skipping call.");
+    return null;
+  }
+
   try {
-    const response = await axios.get(`${PROXY_BASE_URL}/productData`, {
-      params: { productId },
+    const response = await axios.post(`${API_BASE_URL}/api/productData`, {
+      productId,
     });
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching product data:', error);
-    throw error;
-  }
-}
 
-export async function submitPO(poData) {
-  try {
-    const response = await axios.post(`${PROXY_BASE_URL}/submitPO`, poData);
-    return response.data;
+    const rawXml = response.data;
+    console.log("Raw SOAP XML:", rawXml);
+
+    // Parse XML to JS object
+    const parser = new XMLParser({
+      ignoreAttributes: false,
+      attributeNamePrefix: "",
+    });
+    const parsed = parser.parse(rawXml);
+    console.log("Parsed SOAP response:", parsed);
+
+    // Navigate through SOAP envelope to find product data
+    const productResponse =
+      parsed["soap:Envelope"]?.["soap:Body"]?.GetProductResponse;
+
+    return productResponse || {};
   } catch (error) {
-    console.error('Error submitting PO:', error);
+    console.error("Error fetching product data:", error);
     throw error;
   }
-}
+};
