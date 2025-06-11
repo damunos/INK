@@ -1,46 +1,54 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const soap = require('soap');
+// promoStandardsProxy.cjs
+const express = require("express");
+const cors = require("cors");
+const bodyParser = require("body-parser");
+const soap = require("soap");
 
 const app = express();
-app.use(bodyParser.json());
-
-// IMPORTANT: use environment PORT for Render
 const PORT = process.env.PORT || 4000;
 
-const WSDL_URL = 'https://ws.sanmar.com/ProductDataService.svc?singleWsdl';
-const username = 'melaniesue9972';
-const password = 'Alan1963!';
+app.use(cors()); // ✅ Enable CORS
+app.use(bodyParser.json());
 
-app.post('/api/productData', async (req, res) => {
+// SanMar SOAP WSDL endpoint
+const WSDL_URL = "https://ws.sanmar.com/ProductDataService.svc?singleWsdl";
+
+app.post("/api/productData", async (req, res) => {
   const { productId } = req.body;
-  console.log('Incoming request to /api/productData with productId:', productId);
+  console.log("Incoming request to /api/productData with productId:", productId);
 
   if (!productId) {
-    console.log('Missing productId in request body');
-    return res.status(400).send('Missing productId');
+    res.status(400).json({ error: "Missing productId in request body" });
+    return;
   }
 
   try {
-    console.log(`Using WSDL URL: ${WSDL_URL}`);
-    const client = await soap.createClientAsync(WSDL_URL);
+    console.log("Using WSDL URL:", WSDL_URL);
 
-    client.setSecurity(new soap.BasicAuthSecurity(username, password));
+    const client = await soap.createClientAsync(WSDL_URL);
+    client.setSecurity(
+      new soap.BasicAuthSecurity(
+        "melaniesue9972", // Replace with your SanMar username
+        "Alan1963!"       // Replace with your SanMar password
+      )
+    );
 
     const args = {
       ProductId: productId,
-      Language: 'en',
-      Currency: 'USD'
+      LocalizationCountry: "US",
+      LocalizationLanguage: "en",
     };
 
-    console.log('Calling GetProduct with args:', args);
-    const [result] = await client.GetProductAsync(args);
+    console.log("Calling GetProduct with args:", args);
 
-    console.log('SOAP API result:', result);
-    res.send(result);
-  } catch (error) {
-    console.error('Error calling SOAP API:', error.message);
-    res.status(500).send(`Error calling SOAP API: ${error.message}`);
+    const [result, rawResponse] = await client.GetProductAsync(args);
+
+    console.log("SOAP response received for productId:", productId);
+
+    res.send(rawResponse); // send raw SOAP XML to frontend for now
+  } catch (err) {
+    console.error("Error calling SOAP API:", err.message);
+    res.status(500).json({ error: "Error calling SOAP API", details: err.message });
   }
 });
 
