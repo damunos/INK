@@ -2,13 +2,26 @@
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const soap = require("soap");
+
+// Important — workaround for some Render environments
+let soap;
+try {
+  soap = require("soap");
+} catch (err) {
+  console.error("❌ Failed to require 'soap' module:", err.message);
+  process.exit(1); // Exit with error so deploy fails clearly
+}
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-app.use(cors()); // ✅ Enable CORS
+app.use(cors()); // Enable CORS
 app.use(bodyParser.json());
+
+// Health check endpoint
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok", timestamp: new Date().toISOString() });
+});
 
 // SanMar SOAP WSDL endpoint
 const WSDL_URL = "https://ws.sanmar.com/ProductDataService.svc?singleWsdl";
