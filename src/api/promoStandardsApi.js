@@ -3,7 +3,8 @@
 import axios from "axios";
 import { XMLParser } from "fast-xml-parser";
 
-const API_BASE_URL = "http://localhost:4000";
+const API_BASE_URL = "https://ink-a5bp.onrender.com";
+
 
 export const getProductData = async (productId) => {
   if (!productId) {
